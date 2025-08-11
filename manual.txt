@@ -1,0 +1,232 @@
+Plaintext
+
+PlayGround Engine Manual do Usuário
+
+Bem-vindo ao PlayGround! Este manual é um guia completo para você usar a sua engine de forma eficiente. Aqui, cada classe e funcionalidade é explicada em detalhes.
+
+---
+
+### 1. Estrutura de Arquivos
+
+Sua engine é organizada em dois diretórios principais:
+
+-   `PlayGround/`: Contém todos os arquivos da engine (API).
+-   `./`: Contém os arquivos do seu jogo, como `index.html` e `main.js`.
+
+Para usar a engine, você deve importar o arquivo `PlayGround/api.js` no seu `main.js`.
+
+Exemplo:
+```javascript
+import { PlayGround } from './PlayGround/api.js';
+2. Classes Principais da Engine
+2.1. Game
+A classe principal que gerencia o canvas e o contexto 2D.
+
+constructor(config):
+
+config: Objeto com canvasId (ID do elemento <canvas>), width e height.
+
+clear(color):
+
+Limpa o canvas. Opcionalmente, pode preencher com uma cor de fundo.
+
+color: String com a cor de fundo (ex: '#333', 'blue').
+
+2.2. Input
+Gerencia a entrada do usuário (teclado e mouse).
+
+setupEventListeners():
+
+Inicializa os listeners de eventos do teclado (keydown, keyup) e do mouse.
+
+isKeyDown(key):
+
+Retorna true se a tecla com o código key estiver pressionada.
+
+getMousePosition():
+
+Retorna um objeto { x, y } com as coordenadas atuais do mouse.
+
+2.3. Time
+Controla o tempo de jogo, essencial para o movimento e a física.
+
+update(currentTime):
+
+Atualiza o tempo do último frame. Deve ser chamado no início de cada gameLoop.
+
+getDeltaTime():
+
+Retorna o tempo decorrido em segundos desde o último frame. Use este valor para calcular o movimento (posição += velocidade * deltaTime).
+
+3. Gerenciamento de Cenas e Estado
+3.1. GameStateManager
+Gerencia os estados (cenas) do jogo, como MENU, PLAYING e WIN.
+
+addState(name, state):
+
+Adiciona uma nova cena à lista de estados.
+
+name: String com o nome da cena (ex: 'MENU').
+
+state: Uma instância da sua classe de cena (ex: new MenuScene(...)).
+
+setState(name):
+
+Muda para a cena com o nome name de forma instantânea.
+
+Chama o método exit() da cena atual e enter() da nova cena.
+
+currentState:
+
+A cena que está ativa no momento.
+
+3.2. Scene
+A classe base para todas as cenas do seu jogo.
+
+constructor(game, graphics, input, camera):
+
+Recebe as instâncias principais da engine para que você possa usá-las em sua cena.
+
+enter():
+
+Onde usar: Chamado uma vez quando a cena é ativada.
+
+Exemplo de uso: Inicializar botões, carregar o mapa do nível, criar o jogador.
+
+update(deltaTime):
+
+Onde usar: Chamado a cada frame.
+
+Exemplo de uso: Atualizar a posição do jogador, verificar colisões, processar a entrada do usuário.
+
+draw():
+
+Onde usar: Chamado a cada frame, logo após o update.
+
+Exemplo de uso: Desenhar o jogador, o mapa, o texto e a interface do usuário.
+
+exit():
+
+Onde usar: Chamado uma vez quando a cena é desativada.
+
+Exemplo de uso: Limpar arrays, remover event listeners ou liberar recursos.
+
+4. Gráficos e Renderização
+4.1. Graphics
+Classe que facilita o desenho no canvas.
+
+drawRect(x, y, width, height, color):
+
+Desenha um retângulo preenchido.
+
+drawText(text, x, y, align, color, font):
+
+Desenha um texto na tela.
+
+align: Alinhamento do texto (ex: 'center', 'left').
+
+4.2. Camera
+Gerencia a viewport do jogo, permitindo que você siga o jogador.
+
+x, y: Posição da câmera no mundo do jogo.
+
+applyTransform(context):
+
+Ajusta a origem do contexto do canvas para a posição da câmera, fazendo com que todos os objetos sejam desenhados em relação a ela. Deve ser chamado antes de desenhar a cena.
+
+restoreTransform(context):
+
+Restaura o contexto do canvas ao estado original. Deve ser chamado após desenhar a cena.
+
+4.3. ParallaxManager
+Cria o efeito de paralaxe (planos de fundo que se movem em velocidades diferentes).
+
+addLayer(layer):
+
+Adiciona uma camada de paralaxe.
+
+draw(graphics, camera):
+
+Desenha todas as camadas.
+
+5. Física e Colisões
+5.1. GameObject
+A classe base para todos os objetos do jogo (jogador, inimigos, etc.).
+
+constructor(x, y, width, height):
+
+Define a posição e o tamanho do objeto.
+
+5.2. RigidBody
+Adiciona física a um GameObject, como gravidade e velocidade.
+
+constructor(gameObject):
+
+Recebe um GameObject para vincular o corpo rígido.
+
+setVelocity(vx, vy):
+
+Define a velocidade do objeto.
+
+velocity.x, velocity.y: Velocidade atual.
+
+5.3. Physics
+Simula a física para todos os objetos adicionados.
+
+setGravity(gx, gy):
+
+Define a gravidade do mundo.
+
+addBody(rigidBody):
+
+Adiciona um corpo rígido para ser simulado.
+
+update(deltaTime):
+
+Calcula a nova posição de todos os corpos rígidos, aplicando a gravidade.
+
+5.4. Tilemap
+Cria um mapa de jogo a partir de uma matriz.
+
+constructor(matrix, tileSize, tileset):
+
+matrix: Matriz 2D que define o mapa.
+
+tileSize: Tamanho de cada bloco.
+
+tileset: Objeto que mapeia os números da matriz para propriedades (cor, solidez).
+
+isSolid(worldX, worldY):
+
+Verifica se um ponto no mundo do jogo está em um bloco sólido.
+
+6. Outras Ferramentas
+6.1. Debugger
+Uma ferramenta de depuração para visualizar informações em tempo real.
+
+addInfo(key, value):
+
+Adiciona uma informação para ser exibida na tela.
+
+draw():
+
+Desenha as informações na tela (geralmente no final do gameLoop).
+
+6.2. MobileControls
+Gerencia botões virtuais para dispositivos móveis.
+
+isTouchDevice: true se o dispositivo for móvel.
+
+addButton(name, button):
+
+Adiciona um botão virtual.
+
+isPressed(name):
+
+Verifica se o botão virtual está sendo pressionado.
+
+draw(graphics):
+
+Desenha os botões na tela.
+
+Fim do Manual.
